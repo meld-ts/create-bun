@@ -50,6 +50,8 @@ pkg.description = 'my-project';
 delete pkg.keywords;
 delete pkg.repository;
 delete pkg.license;
+delete pkg.bin;
+delete pkg['bun-create'];
 
 if (mode === 'lib') {
   pkg.files = ['./dist'];
