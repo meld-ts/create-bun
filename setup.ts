@@ -46,12 +46,25 @@ biome.files.includes =
 await Bun.write('biome.json', `${JSON.stringify(biome, null, 2)}\n`);
 
 // --- package.json ---
-if (mode === 'react-app') {
+// reset npm-package-specific fields to project defaults
+pkg.name = 'my-project';
+pkg.description = 'my-project';
+delete pkg.keywords;
+delete pkg.repository;
+delete pkg.license;
+
+if (mode === 'lib') {
+  pkg.files = ['./dist'];
+} else if (mode === 'app') {
+  pkg.private = true;
+  delete pkg.module;
+  delete pkg.types;
+} else if (mode === 'react-app') {
+  pkg.private = true;
   pkg.scripts.dev = 'bun --hot scripts/dev-serve.ts';
   pkg.scripts.build = 'bun scripts/build.ts';
   delete pkg.module;
   delete pkg.types;
-  delete pkg.files;
 }
 await Bun.write('package.json', `${JSON.stringify(pkg, null, 2)}\n`);
 
