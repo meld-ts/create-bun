@@ -34,7 +34,7 @@ pkg.name = projectName;
 await Bun.write(join(targetDir, 'package.json'), `${JSON.stringify(pkg, null, 2)}\n`);
 
 console.log('\nInstalling dependencies...');
-const install = Bun.spawn([process.execPath, 'install'], {
+const install = Bun.spawn(['bun', 'install'], {
   cwd: targetDir,
   stdout: 'inherit',
   stderr: 'inherit',

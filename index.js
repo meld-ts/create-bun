@@ -25,7 +25,7 @@ await Bun.write(join(targetDir, "package.json"), `${JSON.stringify(pkg, null, 2)
 `);
 console.log(`
 Installing dependencies...`);
-var install = Bun.spawn([process.execPath, "install"], {
+var install = Bun.spawn(["bun", "install"], {
   cwd: targetDir,
   stdout: "inherit",
   stderr: "inherit",
