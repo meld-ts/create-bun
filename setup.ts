@@ -1,6 +1,5 @@
 #!/usr/bin/env bun
 import { mkdir, unlink } from 'node:fs/promises';
-import { $ } from 'bun';
 
 const MODES = ['lib', 'app', 'react-app'] as const;
 type Mode = (typeof MODES)[number];
@@ -31,7 +30,6 @@ if (mode === 'react-app') {
   opts.jsxImportSource = 'react';
   opts.allowJs = true;
   opts.noImplicitOverride = true;
-  // react-app: use include instead of exclude for clarity
   tsconfig.include = ['src'];
   tsconfig.exclude = ['node_modules', 'dist'];
 }
@@ -65,28 +63,21 @@ if (mode === 'lib') {
   pkg.scripts.build = 'bun scripts/build.ts';
   delete pkg.module;
   delete pkg.types;
+  // add react deps — bun install below will resolve them
+  pkg.dependencies = { react: 'latest', 'react-dom': 'latest' };
+  pkg.devDependencies['@types/react'] = 'latest';
+  pkg.devDependencies['@types/react-dom'] = 'latest';
 }
 await Bun.write('package.json', `${JSON.stringify(pkg, null, 2)}\n`);
 
-// --- @typescript/native-preview ---
-console.log('\nInstalling @typescript/native-preview...');
-await $`bun add -D @typescript/native-preview`;
-
-// --- react-app specific ---
+// --- react-app specific files ---
 if (mode === 'react-app') {
-  console.log('\nInstalling React...');
-  await $`bun add react react-dom`;
-  await $`bun add -D @types/react @types/react-dom`;
-
-  // remove lib/app defaults
   await unlink('src/index.ts').catch(() => {});
   await unlink('src/index.test.ts').catch(() => {});
   await unlink('bunup.config.ts').catch(() => {});
 
-  // bunfig.toml
   await Bun.write('bunfig.toml', '[serve.static]\nenv = "BUN_PUBLIC_*"\n');
 
-  // scripts/
   await mkdir('scripts', { recursive: true });
 
   await Bun.write(
@@ -128,7 +119,6 @@ build({
 `,
   );
 
-  // src/
   await Bun.write(
     'src/index.html',
     `<!DOCTYPE html>
@@ -207,13 +197,25 @@ body {
 `,
   );
 
-  // placeholder for CSS module declarations etc.
   await Bun.write('src/global.d.ts', '');
+
+  // install react deps that were just added to package.json
+  console.log('\nInstalling React...');
+  const install = Bun.spawn(['bun', 'install'], {
+    stdout: 'inherit',
+    stderr: 'inherit',
+    stdin: null,
+  });
+  await install.exited;
 }
 
-// --- biome migrate (updates $schema to installed version) ---
-console.log('\nRunning biome migrate...');
-await $`bunx biome migrate --write`.nothrow();
+// --- sync biome $schema to installed version ---
+const biomeMeta = (await Bun.file(
+  'node_modules/@biomejs/biome/package.json',
+).json()) as { version: string };
+const freshBiome = (await Bun.file('biome.json').json()) as Record<string, unknown>;
+freshBiome['$schema'] = `https://biomejs.dev/schemas/${biomeMeta.version}/schema.json`;
+await Bun.write('biome.json', `${JSON.stringify(freshBiome, null, 2)}\n`);
 
 // --- self-destruct ---
 await unlink(new URL('setup.ts', import.meta.url));

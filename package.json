@@ -23,6 +23,7 @@
   "devDependencies": {
     "@biomejs/biome": "latest",
     "@types/bun": "latest",
+    "@typescript/native-preview": "latest",
     "bunup": "latest"
   },
   "peerDependencies": {
