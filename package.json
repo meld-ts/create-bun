@@ -1,0 +1,31 @@
+{
+  "name": "my-project",
+  "description": "my-project",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "files": ["./dist"],
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "keywords": [],
+  "scripts": {
+    "fmt": "biome format --write ./src",
+    "lint": "biome lint --error-on-warnings ./src",
+    "ts-check": "tsgo --noEmit",
+    "test": "bun test src/ --coverage",
+    "dev": "bun run --hot ./src/index.ts",
+    "build": "bunup",
+    "biome-migrate": "bunx biome migrate --write"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "latest",
+    "@types/bun": "latest",
+    "bunup": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^6"
+  },
+  "bun-create": {
+    "postinstall": "bun run setup.ts"
+  }
+}
