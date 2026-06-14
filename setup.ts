@@ -125,7 +125,7 @@ build({
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
   <title>App</title>
 </head>
 <body>
@@ -143,6 +143,7 @@ import { createRoot } from 'react-dom/client';
 import App from './app/App';
 import './global.css';
 
+// biome-ignore lint/style/noNonNullAssertion: app_root is declared in index.html and always present at runtime
 const elem = document.getElementById('app_root')!;
 const app = (
   <StrictMode>
@@ -150,7 +151,7 @@ const app = (
   </StrictMode>
 );
 
-// reuse root across HMR updates
+// biome-ignore lint/suspicious/noAssignInExpressions: ??= assignment is the idiomatic HMR pattern to persist root across hot reloads
 (import.meta.hot.data.root ??= createRoot(elem)).render(app);
 `,
   );
@@ -158,8 +159,33 @@ const app = (
   await mkdir('src/app', { recursive: true });
   await Bun.write(
     'src/app/App.tsx',
-    `const App = () => {
-  return <div>App</div>;
+    `import ReactSvg from '../assets/react.svg';
+
+const App = () => {
+  return (
+    <div
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        gap: '1em',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1em' }}>
+        <img src={ReactSvg} alt={'React Logo'} style={{ width: 128 }} />
+        <span>Ｘ</span>
+        <img
+          src={'https://bun.com/logo.svg'}
+          alt={'Bun Logo'}
+          style={{ width: 128 }}
+        />
+      </div>
+      <h1>Web App @ React + Bun</h1>
+      <p style={{ color: 'rgb(from currentColor r g b / 0.6)' }}>Have fun!</p>
+    </div>
+  );
 };
 
 export default App;
@@ -169,6 +195,7 @@ export default App;
   await Bun.write(
     'src/global.css',
     `:root {
+  color-scheme: light dark;
 }
 
 html {
@@ -179,6 +206,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100%;
+  color: rgb(from currentColor r g b / 0.8);
 }
 
 *,
@@ -197,7 +225,42 @@ body {
 `,
   );
 
-  await Bun.write('src/global.d.ts', '');
+  await Bun.write(
+    'src/global.d.ts',
+    `declare module "*.svg" {
+  /**
+   * A path to the SVG file
+   */
+  const path: \`\${string}.svg\`;
+  export = path;
+}
+
+declare module "*.css" {}
+
+declare module "*.module.css" {
+  /**
+   * A record of class names to their corresponding CSS module classes
+   */
+  const classes: { readonly [key: string]: string };
+  export = classes;
+}
+`,
+  );
+
+  await mkdir('src/assets', { recursive: true });
+  await Bun.write(
+    'src/assets/react.svg',
+    `<svg width="100%" height="100%" viewBox="-10.5 -9.45 21 18.9" fill="none"
+     xmlns="http://www.w3.org/2000/svg"
+     class="text-sm me-0 w-10 h-10 text-brand dark:text-brand-dark flex origin-center transition-all ease-in-out">
+    <circle cx="0" cy="0" r="2" fill="rgb(88, 196, 220)"></circle>
+    <g stroke="rgb(88, 196, 220)" stroke-width="1" fill="none">
+        <ellipse rx="10" ry="4.5"></ellipse>
+        <ellipse rx="10" ry="4.5" transform="rotate(60)"></ellipse>
+        <ellipse rx="10" ry="4.5" transform="rotate(120)"></ellipse>
+    </g>
+</svg>`,
+  );
 
   // install react deps that were just added to package.json
   console.log('\nInstalling React...');
