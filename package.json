@@ -1,7 +1,7 @@
 {
   "name": "@meld-ts/create-bun",
   "description": "A modern Bun project template with TypeScript, Biome, and first-class support for library, app, and react-app project modes.",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "type": "module",
   "license": "MIT",
   "keywords": ["bun", "template", "typescript", "biome", "react"],
@@ -12,7 +12,7 @@
   "bin": {
     "create-bun": "index.js"
   },
-  "files": ["index.js", "template-*"],
+  "files": ["index.js", "template-lib", "template-app", "template-react-app"],
   "scripts": {
     "build": "bun build src/index.ts --outfile index.js --target bun",
     "prepublishOnly": "bun run build",
