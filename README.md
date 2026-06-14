@@ -7,7 +7,7 @@ A modern Bun project template with TypeScript, Biome, and first-class support fo
 ## Usage
 
 ```bash
-bun create meld-ts/template-bun my-project
+bun create @meld-ts/bun my-project
 ```
 
 During setup, you'll be prompted to choose a project mode:

@@ -1,5 +1,5 @@
 {
-  "name": "@meld-ts/template-bun",
+  "name": "@meld-ts/create-bun",
   "description": "A modern Bun project template with TypeScript, Biome, and first-class support for library, app, and react-app project modes.",
   "version": "1.0.0",
   "type": "module",
