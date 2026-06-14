@@ -24,23 +24,12 @@ pkg.name = projectName;
 await Bun.write(join(targetDir, "package.json"), `${JSON.stringify(pkg, null, 2)}
 `);
 console.log(`
-Installing dependencies...`);
-var install = Bun.spawn(["bun", "install"], {
-  cwd: targetDir,
-  stdout: "inherit",
-  stderr: "inherit",
-  stdin: null
-});
-await install.exited;
-var biomeMeta = await Bun.file(join(targetDir, "node_modules/@biomejs/biome/package.json")).json();
-var biome = await Bun.file(join(targetDir, "biome.json")).json();
-biome["$schema"] = `https://biomejs.dev/schemas/${biomeMeta.version}/schema.json`;
-await Bun.write(join(targetDir, "biome.json"), `${JSON.stringify(biome, null, 2)}
-`);
-console.log(`
 \u2705 [${mode}] project ready!`);
+console.log(`
+  cd ${projectName}`);
+console.log("  bun install");
 if (mode === "react-app") {
-  console.log(`Run: cd ${projectName} && bun run dev`);
+  console.log("  bun run dev");
 } else {
-  console.log(`Run: cd ${projectName} && bun run ts-check && bun run test`);
+  console.log("  bun run ts-check && bun run test");
 }
