@@ -1,38 +1,29 @@
 {
   "name": "@meld-ts/create-bun",
   "description": "A modern Bun project template with TypeScript, Biome, and first-class support for library, app, and react-app project modes.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "type": "module",
   "license": "MIT",
   "keywords": ["bun", "template", "typescript", "biome", "react"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/meld-ts/template-bun.git"
+    "url": "https://github.com/meld-ts/create-bun.git"
   },
   "bin": {
-    "create-bun": "bin/create.js"
+    "create-bun": "index.js"
   },
-  "module": "./src/index.ts",
-  "types": "./src/index.ts",
+  "files": ["index.js", "template-*"],
   "scripts": {
+    "build": "bun build src/index.ts --outfile index.js --target bun",
+    "prepublishOnly": "bun run build",
     "fmt": "biome format --write ./src",
     "lint": "biome lint --error-on-warnings ./src",
     "ts-check": "tsgo --noEmit",
-    "test": "bun test src/ --coverage",
-    "dev": "bun run --hot ./src/index.ts",
-    "build": "bunup",
     "biome-migrate": "bunx biome migrate --write"
   },
   "devDependencies": {
     "@biomejs/biome": "latest",
     "@types/bun": "latest",
-    "@typescript/native-preview": "latest",
-    "bunup": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^6"
-  },
-  "bun-create": {
-    "postinstall": "bun run setup.ts"
+    "@typescript/native-preview": "latest"
   }
 }

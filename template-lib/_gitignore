@@ -1,0 +1,35 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+browser/
+
+# test & coverage
+coverage/
+
+# logs
+logs/
+*.log
+npm-debug.log*
+bun-debug.log*
+
+# temp
+tmp/
+temp/
+.tmp/
+.temp/
+
+# env
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# editor
+.idea/
+.vscode/
+*.local
