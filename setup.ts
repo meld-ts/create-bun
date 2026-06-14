@@ -201,7 +201,7 @@ body {
 
   // install react deps that were just added to package.json
   console.log('\nInstalling React...');
-  const install = Bun.spawn(['bun', 'install'], {
+  const install = Bun.spawn([process.execPath, 'install'], {
     stdout: 'inherit',
     stderr: 'inherit',
     stdin: null,
