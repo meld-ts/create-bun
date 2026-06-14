@@ -1,5 +1,7 @@
 # template-bun
 
+<a href="https://github.com/meld-ts/core" target="_blank"><img src="https://github.com/meld-ts/core/raw/main/assets/meld-ts.png" width="320" style="max-width: 100%;"></a>
+
 A modern Bun project template with TypeScript, Biome, and first-class support for **library**, **app**, and **react-app** project modes.
 
 ## Usage
