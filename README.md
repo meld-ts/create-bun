@@ -18,9 +18,10 @@ During setup, you'll be prompted to choose a project mode:
 
 ## What's included
 
-- **TypeScript** via [`@typescript/native-preview`](https://github.com/nicolo-ribaudo/tc39-proposal-type-annotations) (tsgo)
-- **Biome** — formatter + linter, pre-configured
-- **bunup** — build tool for lib/app modes
+- **[Bun](https://bun.com/)** — runtime, package manager, test runner
+- **TypeScript** via [`@typescript/native-preview`](https://github.com/microsoft/typescript-go) (tsgo)
+- **[Biome](https://biomejs.dev/)** — formatter + linter, pre-configured
+- **[bunup](https://bunup.dev/)** — build tool for lib/app modes
 - **Bun native bundler** — for react-app mode (HTML entrypoint, HMR)
 
 ## Scripts
