@@ -1,6 +1,6 @@
 {
   "name": "@meld-ts/create-bun",
-  "description": "A modern Bun project template with TypeScript, Biome, and first-class support for library, app, and react-app project modes.",
+  "description": "A modern Bun project template with TypeScript, Biome, and first-class support for lib, app, and react project modes.",
   "version": "1.0.7",
   "type": "module",
   "license": "MIT",
@@ -14,12 +14,15 @@
   },
   "files": ["index.js", "template-lib", "template-app", "template-react-app"],
   "scripts": {
-    "build": "bun build src/index.ts --outfile index.js --target bun",
+    "build": "bun run src/build.ts",
     "prepublishOnly": "bun run build",
     "fmt": "biome format --write ./src",
     "lint": "biome lint --error-on-warnings ./src",
     "ts-check": "tsgo --noEmit",
-    "biome-migrate": "bunx biome migrate --write"
+    "biome-migrate": "bunx biome migrate --write",
+    "dev:lib": "bun src/index.ts test-lib --mode lib --cwd ./temp --rm --template-root ./",
+    "dev:app": "bun src/index.ts test-app --mode app --cwd ./temp --rm --template-root ./",
+    "dev:react": "bun src/index.ts test-app --mode react --cwd ./temp --rm --template-root ./"
   },
   "devDependencies": {
     "@biomejs/biome": "latest",
