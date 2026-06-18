@@ -1,0 +1,5 @@
+{
+  "layer": "lint",
+  "order": 1,
+  "postInstall": ["bunx biome migrate --write"]
+}

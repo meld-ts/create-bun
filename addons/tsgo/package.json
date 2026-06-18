@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "@typescript/native-preview": "latest"
+  },
+  "scripts": {
+    "ts-check": "tsgo --noEmit"
+  }
+}

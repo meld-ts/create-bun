@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "oxlint": "latest",
+    "oxfmt": "latest"
+  },
+  "scripts": {
+    "fmt": "oxfmt",
+    "lint": "oxlint"
+  }
+}
