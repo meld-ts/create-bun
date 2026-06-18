@@ -1,0 +1,5 @@
+{
+  "layer": "structural",
+  "order": 3,
+  "postInstall": ["bun scripts/gen-routes.ts"]
+}

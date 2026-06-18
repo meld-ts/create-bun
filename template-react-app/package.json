@@ -1,28 +1,22 @@
 {
-  "name": "my-project",
+  "name": "my-app",
   "version": "1.0.0",
   "type": "module",
   "private": true,
   "description": "",
   "scripts": {
-    "fmt": "biome format --write ./src",
-    "lint": "biome lint --error-on-warnings ./src",
-    "ts-check": "tsgo --noEmit",
     "test": "bun test src/ --coverage",
     "dev": "bun --hot scripts/dev-serve.ts",
-    "build": "bun scripts/build.ts",
-    "biome-migrate": "bunx biome migrate --write"
+    "build": "bun scripts/build.ts"
   },
   "dependencies": {
     "react": "latest",
     "react-dom": "latest"
   },
   "devDependencies": {
-    "@biomejs/biome": "latest",
     "@types/bun": "latest",
     "@types/react": "latest",
-    "@types/react-dom": "latest",
-    "@typescript/native-preview": "latest"
+    "@types/react-dom": "latest"
   },
   "peerDependencies": {
     "typescript": "^6"

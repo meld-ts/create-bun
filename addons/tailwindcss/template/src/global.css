@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light dark;
+}
+
+html {
+  @apply h-full;
+}
+
+body {
+  @apply min-h-full flex flex-col;
+  color: rgb(from currentColor r g b / 0.8);
+}
+
+*,
+*:before,
+*:after {
+  @apply p-0 m-0 box-border;
+}
+
+.app-root {
+  @apply flex flex-col flex-1;
+}
+
+.wrapper {
+  @apply flex flex-1 items-center justify-center flex-col gap-4;
+}
+
+.have-fun {
+  @apply flex items-center gap-4;
+
+  img {
+    width: 128px;
+  }
+}
+
+.secondary-text {
+  color: rgb(from currentColor r g b / 0.6);
+}

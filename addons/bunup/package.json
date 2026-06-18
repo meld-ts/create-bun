@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "bunup": "latest"
+  },
+  "scripts": {
+    "build": "bunup"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "@biomejs/biome": "latest"
+  },
+  "scripts": {
+    "fmt": "biome format --write ./src",
+    "lint": "biome lint --error-on-warnings ./src"
+  }
+}

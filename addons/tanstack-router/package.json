@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "@tanstack/react-router": "^1.170.16",
+    "@tanstack/react-router-devtools": "^1.167.0"
+  },
+  "devDependencies": {
+    "@tanstack/router-cli": "^1.167.17"
+  },
+  "scripts": {
+    "generate-routes": "bun scripts/gen-routes.ts"
+  }
+}

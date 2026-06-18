@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import App from './app/App';
+import { App } from './app';
 import './global.css';
 
 // biome-ignore lint/style/noNonNullAssertion: app_root is declared in index.html and always present at runtime

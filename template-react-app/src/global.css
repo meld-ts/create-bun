@@ -26,3 +26,26 @@ body {
   flex-direction: column;
   flex: 1 1 auto;
 }
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 1rem;
+}
+
+.have-fun {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  img {
+    width: 128px;
+  }
+}
+
+.secondary-text {
+  color: rgb(from currentColor r g b / 0.6);
+}
