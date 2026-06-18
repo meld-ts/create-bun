@@ -13,7 +13,6 @@ type LintTool = 'none' | 'biome' | 'oxc';
 type Extra = 'tsgo' | 'bunup' | 'tailwindcss' | 'tanstack-router';
 // biome-ignore lint/suspicious/noExplicitAny: json merge
 type PkgJson = Record<string, any>;
-type JsonValue = PkgJson | any[];
 
 interface AddonMeta {
   layer?: string;
@@ -35,6 +34,7 @@ function cancelIfCancelled<T>(v: T | symbol): T {
 
 function run(args: string[], cwd: string): Promise<number> {
   return new Promise((resolve, reject) => {
+    // biome-ignore lint/style/noNonNullAssertion: args[0] always present after parseArgs
     const proc = spawn(args[0]!, args.slice(1), {
       cwd,
       stdio: 'inherit',
@@ -70,7 +70,12 @@ function listFiles(dir: string, base = dir): string[] {
 function mergePackageJson(base: PkgJson, ...addons: PkgJson[]): PkgJson {
   const result: PkgJson = { ...base };
   for (const addon of addons) {
-    for (const key of ['dependencies', 'devDependencies', 'peerDependencies', 'scripts'] as const) {
+    for (const key of [
+      'dependencies',
+      'devDependencies',
+      'peerDependencies',
+      'scripts',
+    ] as const) {
       if (addon[key]) result[key] = { ...(result[key] ?? {}), ...addon[key] };
     }
   }
@@ -101,7 +106,9 @@ function isPlainObject(v: any): v is Record<string, any> {
 
 function validatePackageName(v: string | undefined): string | undefined {
   if (!v?.trim()) return 'Package name is required';
-  if (!/^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/.test(v.trim())) {
+  if (
+    !/^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/.test(v.trim())
+  ) {
     return 'Use lowercase + hyphens. Scoped: @org/name';
   }
 }
@@ -154,8 +161,16 @@ async function main(): Promise<void> {
       await p.select({
         message: 'Directory name:',
         options: [
-          { value: `${ns}-${name}`, label: `${ns}-${name}`, hint: 'flat (recommended)' },
-          { value: `${ns}/${name}`, label: `${ns}/${name}`, hint: 'nested subfolder' },
+          {
+            value: `${ns}-${name}`,
+            label: `${ns}-${name}`,
+            hint: 'flat (recommended)',
+          },
+          {
+            value: `${ns}/${name}`,
+            label: `${ns}/${name}`,
+            hint: 'nested subfolder',
+          },
         ],
       }),
     );
@@ -208,13 +223,29 @@ async function main(): Promise<void> {
       message: 'Lint & format:',
       options: isReactApp
         ? [
-            { value: 'biome', label: 'Biome', hint: 'all-in-one linter + formatter' },
-            { value: 'oxc', label: 'oxc', hint: 'oxlint + oxfmt  (faster, 660+ rules)' },
+            {
+              value: 'biome',
+              label: 'Biome',
+              hint: 'all-in-one linter + formatter',
+            },
+            {
+              value: 'oxc',
+              label: 'oxc',
+              hint: 'oxlint + oxfmt  (faster, 660+ rules)',
+            },
           ]
         : [
             { value: 'none', label: 'None' },
-            { value: 'biome', label: 'Biome', hint: 'all-in-one linter + formatter' },
-            { value: 'oxc', label: 'oxc', hint: 'oxlint + oxfmt  (faster, 660+ rules)' },
+            {
+              value: 'biome',
+              label: 'Biome',
+              hint: 'all-in-one linter + formatter',
+            },
+            {
+              value: 'oxc',
+              label: 'oxc',
+              hint: 'oxlint + oxfmt  (faster, 660+ rules)',
+            },
           ],
     }),
   );
@@ -228,9 +259,21 @@ async function main(): Promise<void> {
       await p.multiselect<Extra>({
         message: 'Add-ons:  (space to toggle)',
         options: [
-          { value: 'tsgo', label: 'tsgo', hint: 'native TS compiler — faster ts-check' },
-          { value: 'tailwindcss', label: 'tailwindcss', hint: 'utility-first CSS (v4 + bun-plugin-tailwind)' },
-          { value: 'tanstack-router', label: 'tanstack-router', hint: 'file-based type-safe router' },
+          {
+            value: 'tsgo',
+            label: 'tsgo',
+            hint: 'native TS compiler — faster ts-check',
+          },
+          {
+            value: 'tailwindcss',
+            label: 'tailwindcss',
+            hint: 'utility-first CSS (v4 + bun-plugin-tailwind)',
+          },
+          {
+            value: 'tanstack-router',
+            label: 'tanstack-router',
+            hint: 'file-based type-safe router',
+          },
         ],
         required: false,
       }),
@@ -240,8 +283,16 @@ async function main(): Promise<void> {
       await p.multiselect<Extra>({
         message: 'Add-ons:  (space to toggle)',
         options: [
-          { value: 'tsgo', label: 'tsgo', hint: 'native TS compiler — faster ts-check' },
-          { value: 'bunup', label: 'bunup', hint: 'build tool for Bun libraries' },
+          {
+            value: 'tsgo',
+            label: 'tsgo',
+            hint: 'native TS compiler — faster ts-check',
+          },
+          {
+            value: 'bunup',
+            label: 'bunup',
+            hint: 'build tool for Bun libraries',
+          },
         ],
         required: false,
       }),
@@ -272,7 +323,10 @@ async function main(): Promise<void> {
   // select template
   const templateDir = isReactApp ? 'template-react-app' : 'template-bun';
   await cp(join(packageRoot, templateDir), targetDir, { recursive: true });
-  await rename(join(targetDir, '_gitignore'), join(targetDir, '.gitignore')).catch(() => {});
+  await rename(
+    join(targetDir, '_gitignore'),
+    join(targetDir, '.gitignore'),
+  ).catch(() => {});
 
   // build merged package.json
   let pkg = await readJson(join(targetDir, 'package.json'));
@@ -322,7 +376,10 @@ async function main(): Promise<void> {
           if (!existsSync(targetPath)) continue; // skip if target doesn't exist
           const mergeContent = await readJson(join(mergeDir, file));
           const targetContent = await readJson(targetPath);
-          await writeJson(targetPath, deepMergeJson(targetContent, mergeContent));
+          await writeJson(
+            targetPath,
+            deepMergeJson(targetContent, mergeContent),
+          );
         }
       }
 
@@ -360,7 +417,7 @@ async function main(): Promise<void> {
 
   // ── post-install ───────────────────────────────────────────────────────────
 
-  for (const { name, meta } of sortedAddons) {
+  for (const { meta } of sortedAddons) {
     for (const cmd of meta.postInstall ?? []) {
       p.log.step(cmd);
       await run(cmd.split(' '), targetDir);

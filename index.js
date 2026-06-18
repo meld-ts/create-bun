@@ -1756,7 +1756,12 @@ function listFiles(dir, base = dir) {
 function mergePackageJson(base, ...addons) {
   const result = { ...base };
   for (const addon of addons) {
-    for (const key of ["dependencies", "devDependencies", "peerDependencies", "scripts"]) {
+    for (const key of [
+      "dependencies",
+      "devDependencies",
+      "peerDependencies",
+      "scripts"
+    ]) {
       if (addon[key])
         result[key] = { ...result[key] ?? {}, ...addon[key] };
     }
@@ -1824,8 +1829,16 @@ async function main() {
     dirName = cancelIfCancelled(await select({
       message: "Directory name:",
       options: [
-        { value: `${ns}-${name}`, label: `${ns}-${name}`, hint: "flat (recommended)" },
-        { value: `${ns}/${name}`, label: `${ns}/${name}`, hint: "nested subfolder" }
+        {
+          value: `${ns}-${name}`,
+          label: `${ns}-${name}`,
+          hint: "flat (recommended)"
+        },
+        {
+          value: `${ns}/${name}`,
+          label: `${ns}/${name}`,
+          hint: "nested subfolder"
+        }
       ]
     }));
   } else {
@@ -1864,12 +1877,28 @@ async function main() {
   const lintTool = cancelIfCancelled(await select({
     message: "Lint & format:",
     options: isReactApp ? [
-      { value: "biome", label: "Biome", hint: "all-in-one linter + formatter" },
-      { value: "oxc", label: "oxc", hint: "oxlint + oxfmt  (faster, 660+ rules)" }
+      {
+        value: "biome",
+        label: "Biome",
+        hint: "all-in-one linter + formatter"
+      },
+      {
+        value: "oxc",
+        label: "oxc",
+        hint: "oxlint + oxfmt  (faster, 660+ rules)"
+      }
     ] : [
       { value: "none", label: "None" },
-      { value: "biome", label: "Biome", hint: "all-in-one linter + formatter" },
-      { value: "oxc", label: "oxc", hint: "oxlint + oxfmt  (faster, 660+ rules)" }
+      {
+        value: "biome",
+        label: "Biome",
+        hint: "all-in-one linter + formatter"
+      },
+      {
+        value: "oxc",
+        label: "oxc",
+        hint: "oxlint + oxfmt  (faster, 660+ rules)"
+      }
     ]
   }));
   let extras = [];
@@ -1877,9 +1906,21 @@ async function main() {
     extras = cancelIfCancelled(await multiselect({
       message: "Add-ons:  (space to toggle)",
       options: [
-        { value: "tsgo", label: "tsgo", hint: "native TS compiler \u2014 faster ts-check" },
-        { value: "tailwindcss", label: "tailwindcss", hint: "utility-first CSS (v4 + bun-plugin-tailwind)" },
-        { value: "tanstack-router", label: "tanstack-router", hint: "file-based type-safe router" }
+        {
+          value: "tsgo",
+          label: "tsgo",
+          hint: "native TS compiler \u2014 faster ts-check"
+        },
+        {
+          value: "tailwindcss",
+          label: "tailwindcss",
+          hint: "utility-first CSS (v4 + bun-plugin-tailwind)"
+        },
+        {
+          value: "tanstack-router",
+          label: "tanstack-router",
+          hint: "file-based type-safe router"
+        }
       ],
       required: false
     }));
@@ -1887,8 +1928,16 @@ async function main() {
     extras = cancelIfCancelled(await multiselect({
       message: "Add-ons:  (space to toggle)",
       options: [
-        { value: "tsgo", label: "tsgo", hint: "native TS compiler \u2014 faster ts-check" },
-        { value: "bunup", label: "bunup", hint: "build tool for Bun libraries" }
+        {
+          value: "tsgo",
+          label: "tsgo",
+          hint: "native TS compiler \u2014 faster ts-check"
+        },
+        {
+          value: "bunup",
+          label: "bunup",
+          hint: "build tool for Bun libraries"
+        }
       ],
       required: false
     }));
@@ -1980,7 +2029,7 @@ async function main() {
     cancel(`bun install failed (exit ${installCode})`);
     process.exit(installCode);
   }
-  for (const { name, meta } of sortedAddons) {
+  for (const { meta } of sortedAddons) {
     for (const cmd of meta.postInstall ?? []) {
       log.step(cmd);
       await run(cmd.split(" "), targetDir);
