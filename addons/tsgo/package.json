@@ -3,6 +3,6 @@
     "typescript": "^7.0.0"
   },
   "scripts": {
-    "ts-check": "tsgo --noEmit"
+    "ts-check": "tsc --noEmit"
   }
 }

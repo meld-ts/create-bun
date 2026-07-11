@@ -18,7 +18,7 @@
     "prepublishOnly": "bun run build",
     "fmt": "biome format --write ./src",
     "lint": "biome lint --error-on-warnings ./src",
-    "ts-check": "tsgo --noEmit",
+    "ts-check": "tsc --noEmit",
     "dev": "bun src/index.ts --cwd ./temp --rm --template-root ./ --no-install"
   },
   "devDependencies": {
