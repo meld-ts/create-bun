@@ -1806,10 +1806,39 @@ async function main() {
     options: {
       cwd: { type: "string" },
       "template-root": { type: "string" },
-      rm: { type: "boolean", default: false }
+      rm: { type: "boolean", default: false },
+      type: { type: "string" },
+      lint: { type: "string" },
+      addons: { type: "string" },
+      "no-install": { type: "boolean", default: false }
     },
     allowPositionals: true
   });
+  const noInstall = values["no-install"] === true;
+  const cliType = values.type;
+  const cliLint = values.lint;
+  const cliAddons = values.addons;
+  const VALID_TYPES = ["lib", "app", "react-app"];
+  if (cliType !== undefined && !VALID_TYPES.includes(cliType)) {
+    cancel(`Invalid --type: ${cliType}. Valid: ${VALID_TYPES.join(", ")}`);
+    process.exit(1);
+  }
+  const VALID_LINTS = ["none", "biome", "oxc"];
+  if (cliLint !== undefined && !VALID_LINTS.includes(cliLint)) {
+    cancel(`Invalid --lint: ${cliLint}. Valid: ${VALID_LINTS.join(", ")}`);
+    process.exit(1);
+  }
+  const VALID_ADDONS = ["tsgo", "bunup", "tailwindcss", "tanstack-router"];
+  let cliAddonList;
+  if (cliAddons !== undefined) {
+    cliAddonList = cliAddons.split(",").map((s2) => s2.trim()).filter(Boolean);
+    for (const a3 of cliAddonList) {
+      if (!VALID_ADDONS.includes(a3)) {
+        cancel(`Invalid --addons value: ${a3}. Valid: ${VALID_ADDONS.join(", ")}`);
+        process.exit(1);
+      }
+    }
+  }
   const cwd = values.cwd ? resolve(values.cwd) : process.cwd();
   const packageRoot = values["template-root"] ? resolve(values["template-root"]) : resolve(fileURLToPath(import.meta.url), "..");
   intro("  create @meld-ts/bun  ");
@@ -1853,7 +1882,7 @@ async function main() {
       process.exit(1);
     }
   }
-  const projectType = cancelIfCancelled(await select({
+  const projectType = cliType ?? cancelIfCancelled(await select({
     message: "Project type:",
     options: [
       {
@@ -1874,7 +1903,7 @@ async function main() {
     ]
   }));
   const isReactApp = projectType === "react-app";
-  const lintTool = cancelIfCancelled(await select({
+  const lintTool = cliLint ?? cancelIfCancelled(await select({
     message: "Lint & format:",
     options: isReactApp ? [
       {
@@ -1901,8 +1930,16 @@ async function main() {
       }
     ]
   }));
-  let extras = [];
-  if (isReactApp) {
+  let extras = cliAddonList ?? [];
+  if (cliAddonList !== undefined) {
+    const validForType = isReactApp ? ["tsgo", "tailwindcss", "tanstack-router"] : ["tsgo", "bunup"];
+    for (const a3 of cliAddonList) {
+      if (!validForType.includes(a3)) {
+        cancel(`Addon '${a3}' is not available for ${projectType}. Valid: ${validForType.join(", ")}`);
+        process.exit(1);
+      }
+    }
+  } else if (isReactApp) {
     extras = cancelIfCancelled(await multiselect({
       message: "Add-ons:  (space to toggle)",
       options: [
@@ -1914,7 +1951,7 @@ async function main() {
         {
           value: "tailwindcss",
           label: "tailwindcss",
-          hint: "utility-first CSS (v4 + bun-plugin-tailwind)"
+          hint: "utility-first CSS (v4 + tailwindcss-bun-plugin)"
         },
         {
           value: "tanstack-router",
@@ -2023,11 +2060,15 @@ async function main() {
     }
   }
   s.stop("Project structure ready.");
-  log.step("Running bun install...");
-  const installCode = await run(["bun", "install"], targetDir);
-  if (installCode !== 0) {
-    cancel(`bun install failed (exit ${installCode})`);
-    process.exit(installCode);
+  if (!noInstall) {
+    log.step("Running bun install...");
+    const installCode = await run(["bun", "install"], targetDir);
+    if (installCode !== 0) {
+      cancel(`bun install failed (exit ${installCode})`);
+      process.exit(installCode);
+    }
+  } else {
+    log.step("Skipped bun install (--no-install)");
   }
   for (const { meta } of sortedAddons) {
     for (const cmd of meta.postInstall ?? []) {
