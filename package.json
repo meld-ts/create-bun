@@ -1,7 +1,7 @@
 {
   "name": "@meld-ts/create-bun",
   "description": "A modern Bun project template with TypeScript, Biome, and first-class support for lib, app, and react project modes.",
-  "version": "1.0.11",
+  "version": "1.1.0",
   "type": "module",
   "license": "MIT",
   "keywords": ["bun", "template", "typescript", "biome", "react"],
@@ -18,13 +18,13 @@
     "prepublishOnly": "bun run build",
     "fmt": "biome format --write ./src",
     "lint": "biome lint --error-on-warnings ./src",
-    "ts-check": "tsgo --noEmit",
-    "dev": "bun src/index.ts --cwd ./temp --rm --template-root ./"
+    "ts-check": "tsc --noEmit",
+    "dev": "bun src/index.ts --cwd ./temp --rm --template-root ./ --no-install"
   },
   "devDependencies": {
     "@biomejs/biome": "latest",
     "@clack/prompts": "^1.5.1",
     "@types/bun": "latest",
-    "@typescript/native-preview": "latest"
+    "typescript": "^7.0.0"
   }
 }

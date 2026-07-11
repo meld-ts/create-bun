@@ -1,5 +1,5 @@
 import { build } from 'bun';
-import tailwind from 'bun-plugin-tailwind';
+import tailwind from 'tailwindcss-bun-plugin';
 
 build({
   entrypoints: ['src/index.html'],

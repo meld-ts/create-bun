@@ -128,9 +128,45 @@ async function main(): Promise<void> {
       cwd: { type: 'string' },
       'template-root': { type: 'string' },
       rm: { type: 'boolean', default: false },
+      type: { type: 'string' },
+      lint: { type: 'string' },
+      addons: { type: 'string' },
+      'no-install': { type: 'boolean', default: false },
     },
     allowPositionals: true,
   });
+
+  const noInstall = values['no-install'] === true;
+  const cliType = values.type as ProjectType | undefined;
+  const cliLint = values.lint as LintTool | undefined;
+  const cliAddons = values.addons as string | undefined;
+
+  // validate --type
+  const VALID_TYPES: ProjectType[] = ['lib', 'app', 'react-app'];
+  if (cliType !== undefined && !VALID_TYPES.includes(cliType)) {
+    p.cancel(`Invalid --type: ${cliType}. Valid: ${VALID_TYPES.join(', ')}`);
+    process.exit(1);
+  }
+
+  // validate --lint
+  const VALID_LINTS: LintTool[] = ['none', 'biome', 'oxc'];
+  if (cliLint !== undefined && !VALID_LINTS.includes(cliLint)) {
+    p.cancel(`Invalid --lint: ${cliLint}. Valid: ${VALID_LINTS.join(', ')}`);
+    process.exit(1);
+  }
+
+  // validate --addons
+  const VALID_ADDONS: Extra[] = ['tsgo', 'bunup', 'tailwindcss', 'tanstack-router'];
+  let cliAddonList: Extra[] | undefined;
+  if (cliAddons !== undefined) {
+    cliAddonList = cliAddons.split(',').map(s => s.trim()).filter(Boolean) as Extra[];
+    for (const a of cliAddonList) {
+      if (!VALID_ADDONS.includes(a)) {
+        p.cancel(`Invalid --addons value: ${a}. Valid: ${VALID_ADDONS.join(', ')}`);
+        process.exit(1);
+      }
+    }
+  }
 
   const cwd = values.cwd ? resolve(values.cwd) : process.cwd();
   const packageRoot = values['template-root']
@@ -191,7 +227,7 @@ async function main(): Promise<void> {
 
   // ── Step 2: project type ───────────────────────────────────────────────────
 
-  const projectType = cancelIfCancelled(
+  const projectType: ProjectType = cliType ?? cancelIfCancelled(
     await p.select<ProjectType>({
       message: 'Project type:',
       options: [
@@ -218,7 +254,7 @@ async function main(): Promise<void> {
 
   // ── Step 3: lint / format ──────────────────────────────────────────────────
 
-  const lintTool = cancelIfCancelled(
+  const lintTool: LintTool = cliLint ?? cancelIfCancelled(
     await p.select<LintTool>({
       message: 'Lint & format:',
       options: isReactApp
@@ -252,9 +288,20 @@ async function main(): Promise<void> {
 
   // ── Step 4: extras / addons ────────────────────────────────────────────────
 
-  let extras: Extra[] = [];
+  let extras: Extra[] = cliAddonList ?? [];
 
-  if (isReactApp) {
+  if (cliAddonList !== undefined) {
+    // addons provided via CLI, validate against project type
+    const validForType: Extra[] = isReactApp
+      ? ['tsgo', 'tailwindcss', 'tanstack-router']
+      : ['tsgo', 'bunup'];
+    for (const a of cliAddonList) {
+      if (!validForType.includes(a)) {
+        p.cancel(`Addon '${a}' is not available for ${projectType}. Valid: ${validForType.join(', ')}`);
+        process.exit(1);
+      }
+    }
+  } else if (isReactApp) {
     extras = cancelIfCancelled(
       await p.multiselect<Extra>({
         message: 'Add-ons:  (space to toggle)',
@@ -267,7 +314,7 @@ async function main(): Promise<void> {
           {
             value: 'tailwindcss',
             label: 'tailwindcss',
-            hint: 'utility-first CSS (v4 + bun-plugin-tailwind)',
+            hint: 'utility-first CSS (v4 + tailwindcss-bun-plugin)',
           },
           {
             value: 'tanstack-router',
@@ -408,11 +455,15 @@ async function main(): Promise<void> {
 
   // ── bun install ────────────────────────────────────────────────────────────
 
-  p.log.step('Running bun install...');
-  const installCode = await run(['bun', 'install'], targetDir);
-  if (installCode !== 0) {
-    p.cancel(`bun install failed (exit ${installCode})`);
-    process.exit(installCode);
+  if (!noInstall) {
+    p.log.step('Running bun install...');
+    const installCode = await run(['bun', 'install'], targetDir);
+    if (installCode !== 0) {
+      p.cancel(`bun install failed (exit ${installCode})`);
+      process.exit(installCode);
+    }
+  } else {
+    p.log.step('Skipped bun install (--no-install)');
   }
 
   // ── post-install ───────────────────────────────────────────────────────────

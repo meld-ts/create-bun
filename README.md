@@ -42,7 +42,7 @@ bun run dev
 |--------|-------------|
 | **Biome** | All-in-one linter + formatter |
 | **oxc** | oxlint + oxfmt (faster, 660+ rules) |
-| **tsgo** | Native TypeScript compiler (`@typescript/native-preview`) |
+| **tsgo** | Native TypeScript compiler (`typescript 7+ includes tsgo`) |
 
 ### lib / app only
 
@@ -54,7 +54,7 @@ bun run dev
 
 | Add-on | Description |
 |--------|-------------|
-| **tailwindcss** | Tailwind CSS v4 + `bun-plugin-tailwind` |
+| **tailwindcss** | Tailwind CSS v4 + `tailwindcss-bun-plugin` |
 | **tanstack-router** | File-based type-safe router with devtools |
 
 > **bunup is not available for react-app** — it only supports `.ts`/`.tsx` entry points, not `index.html`. React apps use Bun's native bundler.
