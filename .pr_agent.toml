@@ -1,0 +1,36 @@
+[config]
+model = "deepseek/deepseek-v4-pro"
+fallback_models = ["deepseek/deepseek-v4-flash"]
+response_language = "zh-CN"
+
+[pr_reviewer]
+require_tests_review = false
+extra_instructions = """
+Review @meld-ts/create-bun — a Bun project scaffold CLI.
+
+Priorities:
+1. Type safety — no `any` without explicit justification; prefer `unknown` for business code.
+2. Addon integrity — changes to addons/*/package.json must match template files and README.
+3. CLI UX — hint text, labels, and error messages must be clear and consistent.
+4. Non-interactive mode — flags (--type, --lint, --addons, --dir, --no-install) must not block on stdin.
+5. Version discipline — every PR must bump package.json version.
+
+Addon rules:
+- Same-layer addons are mutually exclusive (biome vs oxc).
+- tailwindcss-bun-plugin version must match tailwindcss version.
+- postInstall hooks require dependencies; --no-install must skip them.
+
+Anti-patterns:
+- Silent failures — always cancel with a clear message.
+- Hardcoded paths — use join(packageRoot, ...) or resolve(...).
+- @apply on universal selectors (*) in CSS.
+
+Focus on real bugs and regressions, not style nitpicks.
+"""
+
+[pr_description]
+publish_labels = true
+
+[pr_code_suggestions]
+num_code_suggestions = 4
+suggestions_score_threshold = 7

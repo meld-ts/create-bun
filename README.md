@@ -26,6 +26,31 @@ cd my-project
 bun run dev
 ```
 
+### Non-interactive mode
+
+Skip prompts by passing flags (useful for CI and scripts):
+
+```bash
+bun create @meld-ts/bun my-app \
+  --type react-app \
+  --lint biome \
+  --addons tailwindcss,tsgo \
+  --no-install
+```
+
+| Flag | Description |
+|------|-------------|
+| `--type` | `lib` \| `app` \| `react-app` |
+| `--lint` | `none` \| `biome` \| `oxc` |
+| `--addons` | Comma-separated: `tsgo`, `bunup`, `tailwindcss`, `tanstack-router` |
+| `--dir` | Output directory (scoped packages default to `org-name` flat layout) |
+| `--no-install` | Skip `bun install` and post-install hooks |
+| `--rm` | Overwrite existing directory |
+| `--cwd` | Parent directory for the project |
+| `--template-root` | Path to templates (for local dev) |
+
+With `--no-install`, run `bun install` manually, then any addon post-install steps (e.g. `bunx biome migrate --write`, `bun scripts/gen-routes.ts`).
+
 ## Project types
 
 | Type | Entry | Build | HMR | Description |

@@ -60,6 +60,7 @@ bun src/index.ts my-project \
   --type react-app \
   --lint biome \
   --addons tailwindcss,tsgo \
+  --dir my-custom-dir \
   --no-install
 ```
 
