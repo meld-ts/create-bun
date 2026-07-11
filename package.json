@@ -1,7 +1,7 @@
 {
   "name": "@meld-ts/create-bun",
   "description": "A modern Bun project template with TypeScript, Biome, and first-class support for lib, app, and react project modes.",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "type": "module",
   "license": "MIT",
   "keywords": ["bun", "template", "typescript", "biome", "react"],
