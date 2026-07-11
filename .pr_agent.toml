@@ -1,4 +1,6 @@
 [config]
+model = "deepseek/deepseek-v4-pro"
+fallback_models = ["deepseek/deepseek-v4-flash"]
 response_language = "zh-CN"
 
 [pr_reviewer]
