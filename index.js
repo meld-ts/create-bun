@@ -1810,6 +1810,7 @@ async function main() {
       type: { type: "string" },
       lint: { type: "string" },
       addons: { type: "string" },
+      dir: { type: "string" },
       "no-install": { type: "boolean", default: false }
     },
     allowPositionals: true
@@ -1818,6 +1819,8 @@ async function main() {
   const cliType = values.type;
   const cliLint = values.lint;
   const cliAddons = values.addons;
+  const cliDir = values.dir;
+  const nonInteractive = cliType !== undefined || cliLint !== undefined || cliAddons !== undefined || cliDir !== undefined;
   const VALID_TYPES = ["lib", "app", "react-app"];
   if (cliType !== undefined && !VALID_TYPES.includes(cliType)) {
     cancel(`Invalid --type: ${cliType}. Valid: ${VALID_TYPES.join(", ")}`);
@@ -1855,23 +1858,30 @@ async function main() {
     const slash = packageName.indexOf("/");
     const ns = packageName.slice(1, slash);
     const name = packageName.slice(slash + 1);
-    dirName = cancelIfCancelled(await select({
-      message: "Directory name:",
-      options: [
-        {
-          value: `${ns}-${name}`,
-          label: `${ns}-${name}`,
-          hint: "flat (recommended)"
-        },
-        {
-          value: `${ns}/${name}`,
-          label: `${ns}/${name}`,
-          hint: "nested subfolder"
-        }
-      ]
-    }));
+    const flatDir = `${ns}-${name}`;
+    if (cliDir !== undefined) {
+      dirName = cliDir;
+    } else if (nonInteractive) {
+      dirName = flatDir;
+    } else {
+      dirName = cancelIfCancelled(await select({
+        message: "Directory name:",
+        options: [
+          {
+            value: flatDir,
+            label: flatDir,
+            hint: "flat (recommended)"
+          },
+          {
+            value: `${ns}/${name}`,
+            label: `${ns}/${name}`,
+            hint: "nested subfolder"
+          }
+        ]
+      }));
+    }
   } else {
-    dirName = packageName;
+    dirName = cliDir ?? packageName;
   }
   const targetDir = resolve(cwd, dirName);
   if (existsSync(targetDir)) {
@@ -2070,10 +2080,16 @@ async function main() {
   } else {
     log.step("Skipped bun install (--no-install)");
   }
-  for (const { meta } of sortedAddons) {
-    for (const cmd of meta.postInstall ?? []) {
-      log.step(cmd);
-      await run(cmd.split(" "), targetDir);
+  if (!noInstall) {
+    for (const { meta } of sortedAddons) {
+      for (const cmd of meta.postInstall ?? []) {
+        log.step(cmd);
+        const code = await run(cmd.split(" "), targetDir);
+        if (code !== 0) {
+          cancel(`postInstall failed: ${cmd} (exit ${code})`);
+          process.exit(code);
+        }
+      }
     }
   }
   const cd = dirName.replace(/\\/g, "/");
@@ -2085,7 +2101,9 @@ async function main() {
   } else {
     next = "bun run dev";
   }
-  outro(`\u2713 ${packageName} ready!
+  const installHint = noInstall ? `
+  bun install` : "";
+  outro(`\u2713 ${packageName} ready!${installHint}
 
   cd ${cd}
   ${next}`);
