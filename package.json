@@ -19,12 +19,12 @@
     "fmt": "biome format --write ./src",
     "lint": "biome lint --error-on-warnings ./src",
     "ts-check": "tsgo --noEmit",
-    "dev": "bun src/index.ts --cwd ./temp --rm --template-root ./"
+    "dev": "bun src/index.ts --cwd ./temp --rm --template-root ./ --no-install"
   },
   "devDependencies": {
     "@biomejs/biome": "latest",
     "@clack/prompts": "^1.5.1",
     "@types/bun": "latest",
-    "@typescript/native-preview": "latest"
+    "typescript": "^7.0.0"
   }
 }
